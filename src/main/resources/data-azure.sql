@@ -4,6 +4,7 @@ WHERE NOT EXISTS (
     SELECT 1 FROM product WHERE product_name = 'Leaf Rake'
 );
 
+
 INSERT INTO product (product_name, product_code, release_date, description, price, star_rating, image_url)
 SELECT 'Garden Cart', 'GDN-0023', '2025-03-18', '15 gallon capacity rolling garden cart', 32.99, 4.2, 'assets/images/garden_cart.png'
 WHERE NOT EXISTS (
