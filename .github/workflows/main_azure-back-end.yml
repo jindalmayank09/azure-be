@@ -1,6 +1,4 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
+# Alternative approach using publish profile + Azure CLI
 name: Build and deploy JAR app to Azure Web App - Azure-Back-End
 
 on:
@@ -14,7 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read #This is required for actions/checkout
-
     steps:
       - uses: actions/checkout@v4
 
@@ -39,13 +36,31 @@ jobs:
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-      
+
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
           name: java-app
-      
+
+      - name: Login to Azure CLI
+        run: |
+          az login --service-principal \
+            -u ${{ secrets.AZURE_CLIENT_ID }} \
+            -p ${{ secrets.AZURE_CLIENT_SECRET }} \
+            --tenant ${{ secrets.AZURE_TENANT_ID }}
+
+      - name: Enable SQL Server Public Access
+        run: |
+          echo "🔓 Temporarily enabling public network access for SQL Server..."
+          az sql server update \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --name ${{ secrets.AZURE_SQL_SERVER_NAME }} \
+            --enable-public-network true
+          
+          echo "⏳ Waiting for network access change to propagate..."
+          sleep 45
+
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
@@ -54,3 +69,19 @@ jobs:
           slot-name: 'Production'
           package: '*.jar'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_E305E5C7896C4F82AC1D1C6168096830 }}
+
+      - name: Wait for deployment to complete
+        run: |
+          echo "⏳ Waiting for deployment to complete..."
+          sleep 60
+
+      - name: Disable SQL Server Public Access
+        if: always()
+        run: |
+          echo "🔒 Disabling public network access for SQL Server..."
+          az sql server update \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --name ${{ secrets.AZURE_SQL_SERVER_NAME }} \
+            --enable-public-network false || true
+          
+          echo "✅ SQL Server is now private again"
