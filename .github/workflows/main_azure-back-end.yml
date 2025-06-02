@@ -1,61 +1,10 @@
-name: Build and deploy JAR app to Azure Web App - Azure-Back-End
-
-on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
-
+name: Test Basic
+on: workflow_dispatch
 jobs:
-  build:
-    runs-on: [self-hosted,azure-demo-vm01]   # changed here
-    permissions:
-      contents: read
+  test:
+    runs-on: [self-hosted, azure-demo-vm01]
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Java version
-        uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'microsoft'
-
-      - name: Build with Maven
-        run: mvn clean install
-
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v4
-        with:
-          name: java-app
-          path: '${{ github.workspace }}/target/*.jar'
-
-  deploy:
-    runs-on: [self-hosted,azure-demo-vm01]   # changed here
-    needs: build
-    environment:
-      name: 'Production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-
-    steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
-        with:
-          name: java-app
-
-      - name: Deploy to Azure Web App
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: 'Azure-Back-End'
-          slot-name: 'Production'
-          package: '*.jar'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_E305E5C7896C4F82AC1D1C6168096830 }}
-
-      - name: Deployment Instructions
+      - name: Basic test
         run: |
-          echo "🔥 IMPORTANT: If deployment fails with SQL connection error:"
-          echo "1. Go to Azure Portal → SQL Server → Networking"
-          echo "2. Set 'Public network access' to 'Selected networks'"
-          echo "3. Add rule: 0.0.0.0 - 255.255.255.255 (Allow all)"
-          echo "4. Re-run this workflow"
-          echo "5. After successful deployment, remove the rule and set back to 'Disabled'"
+          echo "Runner is working"
+          dir
