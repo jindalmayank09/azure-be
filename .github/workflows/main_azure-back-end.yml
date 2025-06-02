@@ -1,10 +1,7 @@
-name: Test Runner
-on: 
-  workflow_dispatch
-  
+name: Basic Test
+on: workflow_dispatch
 jobs:
   test:
-    runs-on: [self-hosted, azure-demo-vm01]
+    runs-on: self-hosted  # Remove azure-demo-vm01 label
     steps:
-      - name: Test
-        run: echo "Hello World"
+      - run: echo "test"
