@@ -13,6 +13,8 @@ WHERE NOT EXISTS (
 
 
 
+
+
 INSERT INTO product (product_name, product_code, release_date, description, price, star_rating, image_url)
 SELECT 'Hammer', 'TBX-0048', '2025-05-21', 'Curved claw steel hammer', 8.90, 4.8, 'assets/images/hammer.png'
 WHERE NOT EXISTS (
