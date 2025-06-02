@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: self-hosted   # changed here
+    runs-on: [self-hosted,azure-demo-vm01]   # changed here
     permissions:
       contents: read
     steps:
@@ -30,7 +30,7 @@ jobs:
           path: '${{ github.workspace }}/target/*.jar'
 
   deploy:
-    runs-on: self-hosted   # changed here
+    runs-on: [self-hosted,azure-demo-vm01]   # changed here
     needs: build
     environment:
       name: 'Production'
