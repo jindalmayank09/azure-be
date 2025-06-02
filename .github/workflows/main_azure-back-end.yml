@@ -1,10 +1,10 @@
-name: Test Basic
-on: workflow_dispatch
+name: Test Runner
+on: 
+  workflow_dispatch
+  
 jobs:
   test:
     runs-on: [self-hosted, azure-demo-vm01]
     steps:
-      - name: Basic test
-        run: |
-          echo "Runner is working"
-          dir
+      - name: Test
+        run: echo "Hello World"
